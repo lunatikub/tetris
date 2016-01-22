@@ -43,6 +43,7 @@ typedef struct {
     uint8_t  nr_last_completed;
     uint32_t nr_completed;
     eval_t   _e;
+    uint8_t  hold;
 } tetris_t;
 
 #define TETRIS_ERR(msg)                                         \

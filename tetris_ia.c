@@ -169,29 +169,27 @@ double tetris_score_get(tetris_t *t)
         /* EVAL(t->_e.R,  _IR); */
 }
 
-int tetris_ia(tetris_t *t,
-              item_t    item)
-{
-    double score     = -DBL_MAX;
-    double tmp_score = 0;
+typedef struct {
+    int8_t x;
+    int8_t r;
+    push_t p;
+} ia_move_t;
 
-    uint8_t x = 0;
-    uint8_t r = 0;
+static inline void tetris_ia_process(tetris_t  *t,
+                                     item_t     item,
+                                     double    *score,
+                                     ia_move_t *mv)
+{
+    double   tmp_score = 0;
+    uint8_t  x = 0;
+    uint8_t  r = 0;
+    tetris_t t_eval;
 
     uint32_t _R   = tetris_item_nr_R_get(item);
     push_t   push = tetris_item_push_get(item);
 
-    tetris_t t_eval;
-
-    int8_t _x = -1;
-    int8_t _r = -1;
-
-    if (_X_) {
-        tetris_x_eval_init();
-    }
-
-    for (x = 0; x < _W; ++x) { /* foreach position */
-        for (r = 0; r < _R; ++r) { /* foreach rotation */
+    for (x = 0; x < _W; ++x) {
+        for (r = 0; r < _R; ++r) {
 
             memcpy(&t_eval, t, sizeof(tetris_t));
             if (push(&t_eval, r, x) == OUT_OF_BOUND) {
@@ -205,23 +203,46 @@ int tetris_ia(tetris_t *t,
 
             if (_X_) {
                 tetris_x_eval_dump(&t_eval, x, r, tmp_score);
-                getchar();
             }
 
-            if (tmp_score > score) {
-                score = tmp_score;
-                _x = x; _r = r;
+            if (tmp_score > *score) {
+                *score = tmp_score;
+                mv->x = x;
+                mv->r = r;
+                mv->p = push;
                 if (_X_) {
-                    tetris_x_score_dump(&t_eval, _x, _r, score);
+                    tetris_x_score_dump(&t_eval, x, r, *score);
                 }
             }
         }
     }
+}
 
-    if (_x == -1) {
+int tetris_ia(tetris_t *t,
+              item_t    item)
+{
+    double score = -DBL_MAX;
+
+    ia_move_t mv = {
+        .x = -1,
+        .r = -1,
+        .p = NULL,
+    };
+
+    if (_X_) {
+        tetris_x_eval_init();
+    }
+
+    tetris_ia_process(t, item, &score, &mv);
+
+    /**
+     * - Game Over -
+     */
+    if (mv.x == -1) {
         return -1;
     }
 
-    push(t, _r, _x);
+    mv.p(t, mv.r, mv.x);
+
     return 0;
 }
