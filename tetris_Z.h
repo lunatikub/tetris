@@ -29,6 +29,8 @@ static inline int tetris_Z1_push(tetris_t *t,
         return OUT_OF_BOUND;
     }
 
+    t->_e.l = h - 1 + _HZ1;
+
     /* Update Height */
     t->h[x] = h + 1;
     t->h[x + 1] = h + 1;
@@ -71,6 +73,8 @@ static inline int tetris_Z2_push(tetris_t *t,
     if (h + _HZ2 > _H) {
         return OUT_OF_BOUND;
     }
+
+    t->_e.l = h + _HZ2;
 
     /* Update Height */
     t->h[x + 1] = h + 3;

@@ -26,6 +26,8 @@ static inline int tetris_01_push(tetris_t *t,
         return OUT_OF_BOUND;
     }
 
+    t->_e.l = h + _HO1;
+
     /* Update Height and Hole */
     t->h[x] = h + 2;
     t->h[x + 1] = h + 2;

@@ -29,6 +29,8 @@ static inline int tetris_T1_push(tetris_t *t,
         return OUT_OF_BOUND;
     }
 
+    t->_e.l = h + _HT1;
+
     /* Update Height */
     t->h[x] = h + 1;
     t->h[x + 1] = h + 2;
@@ -71,6 +73,8 @@ static inline int tetris_T2_push(tetris_t *t,
     if (h + _HT2 > _H) {
         return OUT_OF_BOUND;
     }
+
+    t->_e.l = h + _HT2;
 
     /* Update Height */
     t->h[x + 1] = h + 2;
@@ -117,6 +121,8 @@ static inline int tetris_T3_push(tetris_t *t,
         return OUT_OF_BOUND;
     }
 
+    t->_e.l = h + _HT3;
+
     /* Update Height */
     t->h[x + 1] = h + 2;
     t->h[x] = h + 2;
@@ -159,6 +165,8 @@ static inline int tetris_T4_push(tetris_t *t,
     if (h + _HT4 > _H) {
         return OUT_OF_BOUND;
     }
+
+    t->_e.l = h + _HT4;
 
     /* Update Height */
     t->h[x + 1] = h + 3;

@@ -149,4 +149,36 @@ typedef enum {
 #include "tetris_T.h"
 #include "tetris_Z.h"
 
+static inline uint8_t tetris_item_nr_R_get(item_t item)
+{
+    switch (item) {
+        case _I: return _INR;
+        case _J: return _JNR;
+        case _L: return _LNR;
+        case _O: return _ONR;
+        case _S: return _SNR;
+        case _T: return _TNR;
+        case _Z: return _ZNR;
+        default: ;
+    }
+
+    return 0;
+}
+
+static inline push_t tetris_item_push_get(item_t item)
+{
+    switch (item) {
+        case _I: return tetris_I_push;
+        case _J: return tetris_J_push;
+        case _L: return tetris_L_push;
+        case _O: return tetris_O_push;
+        case _S: return tetris_S_push;
+        case _T: return tetris_T_push;
+        case _Z: return tetris_Z_push;
+        default: ;
+    }
+
+    return NULL;
+}
+
 #endif /* !TETRIS_ITEM_H_ */

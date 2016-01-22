@@ -12,8 +12,9 @@ typedef struct {
     push_t  p;
 } move_t;
 
-void tetris_next_move_get(tetris_t *t,
-                          item_t    item,
-                          move_t   *move);
+int tetris_ia(tetris_t *t,
+              item_t    item);
+
+double tetris_score_get(tetris_t *t);
 
 #endif /* !TETRIS_IA_H_ */

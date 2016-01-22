@@ -29,6 +29,8 @@ static inline int tetris_S1_push(tetris_t *t,
         return OUT_OF_BOUND;
     }
 
+    t->_e.l = h - 1 + _HS1;
+
     /* Update Height */
     t->h[x] = h;
     t->h[x + 1] = h + 1;
@@ -71,6 +73,8 @@ static inline int tetris_S2_push(tetris_t *t,
     if (h + _HS2 > _H) {
         return OUT_OF_BOUND;
     }
+
+    t->_e.l = h + _HS2;
 
     /* Update Height and Hole */
     t->h[x + 1] = h + 2;
