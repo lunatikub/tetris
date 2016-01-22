@@ -6,15 +6,11 @@
 #include "tetris.h"
 #include "tetris_item.h"
 
-typedef struct {
-    uint8_t r;
-    uint8_t x;
-    push_t  p;
-} move_t;
-
 int tetris_ai(tetris_t *t,
-              item_t    item);
+              item_t    curr_item,
+              item_t   *items,
+              move_t   *mv);
 
-double tetris_score_get(tetris_t *t);
+void tetris_eval(tetris_t *t);
 
 #endif /* !TETRIS_AI_H_ */

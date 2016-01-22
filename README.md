@@ -4,6 +4,7 @@ Tetris AI
 Build
 -----
 cmake .
+or cmake -DCMAKE_BUILD_TYPE=Debug .
 make
 
 Use

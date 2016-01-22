@@ -38,7 +38,7 @@ static inline int tetris_L1_push(tetris_t *t,
 
     h = _H - h - 1;
 
-    /* Update the map */
+    /* Update the wall*/
     _SET(t, x, h, _L);
     _SET(t, x + 1, h, _L);
     _SET(t, x + 2, h, _L);
@@ -81,7 +81,7 @@ static inline int tetris_L2_push(tetris_t *t,
 
     h = _H - h - 1;
 
-    /* Update the map */
+    /* Update the wall*/
     _SET(t, x + 1, h, _L);
     _SET(t, x, h, _L);
     _SET(t, x, h - 1, _L);
@@ -127,7 +127,7 @@ static inline int tetris_L3_push(tetris_t *t,
 
     h = _H - h - 1;
 
-    /* Update the map */
+    /* Update the wall*/
     _SET(t, x, h, _L);
     _SET(t, x, h + 1, _L);
     _SET(t, x + 1, h, _L);
@@ -171,7 +171,7 @@ static inline int tetris_L4_push(tetris_t *t,
 
     h = _H - h - 1;
 
-    /* Update the map */
+    /* Update the wall*/
     _SET(t, x + 1, h, _L);
     _SET(t, x + 1, h - 1, _L);
     _SET(t, x + 1, h - 2, _L);

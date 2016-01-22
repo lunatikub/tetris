@@ -4,13 +4,14 @@
 #include <float.h>
 
 #include "tetris_ai.h"
-#include "tetris_map.h"
+#include "tetris_wall.h"
 #include "tetris_x.h"
+#include "tetris_hold.h"
 
 /**
  * Last item height.
  * ID: l
- * aim: do not increase the map height.
+ * aim: do not increase the wall height.
  */
 static inline int tetris_eval_l(tetris_t *t)
 {
@@ -30,7 +31,7 @@ static inline int tetris_eval_e(tetris_t *t)
 /**
  * Number of transitions between full/empty cell for each lines.
  * ID: dr
- * aim: homogeneous of the map.
+ * aim: homogeneous of the wall.
  */
 static inline int tetris_eval_dr(tetris_t *t)
 {
@@ -55,7 +56,7 @@ static inline int tetris_eval_dr(tetris_t *t)
 /**
  * Number of transitions between full/empty cell for each cols.
  * ID: dc
- * aim: homogeneous of the map.
+ * aim: homogeneous of the wall.
  */
 static inline int tetris_eval_dc(tetris_t *t)
 {
@@ -94,6 +95,18 @@ static inline int tetris_eval_L(tetris_t *t)
     return nr;
 }
 
+static inline int tetris_well_sum(int h_well)
+{
+    int seq = 0;
+    int well = 0;
+
+    for (seq = 0; seq < h_well; ++seq) {
+        well += (seq + 1);
+    }
+
+    return well;
+}
+
 /**
  * Depth of wells.
  * ID: W
@@ -104,24 +117,41 @@ static inline int tetris_eval_W(tetris_t *t)
     int x = 0;
     int y = 0;
 
-    int seq = 0;
     int well = 0;
+    int h_last = 0;
+    int h_warn = 0;
+
+    if (t->h[0] < t->h[1]) {
+        well += tetris_well_sum(t->h[1] - t->h[0]);
+    }
 
     for (x = 0; x < _W; ++x) {
-        seq = 0;
-        for (y = t->h[x] - 1; y > 0; --y) {
-            if (_GET(t, x, _H - y) == 0) {
-                ++seq;
-                well += seq;
-            } else {
-                seq = 0;
+        if (x != 0) {
+            if (h_warn) {
+                if (t->h[x] > h_last) {
+                    int min = t->h[x] > h_warn ? h_warn : t->h[x];
+                    well += tetris_well_sum(min - h_last);
+                }
+                h_warn = 0;
+            }
+
+            if (t->h[x] < h_last) {
+                h_warn = h_last;
             }
         }
+        h_last = t->h[x];
+    }
+
+    if (t->h[_W - 2] > t->h[_W - 1]) {
+        well += tetris_well_sum(t->h[_W - 2] - t->h[_W - 1]);
     }
 
     return well;
 }
 
+/**
+ * XXX
+ */
 static inline int tetris_eval_R(tetris_t *t)
 {
     int x = 0;
@@ -143,7 +173,7 @@ static inline int tetris_eval_R(tetris_t *t)
  */
 #define EVAL(v,i) (((double)(v)) * i)
 
-static inline void tetris_eval(tetris_t *t)
+void tetris_eval(tetris_t *t)
 {
     t->_e.l  = tetris_eval_l(t);
     t->_e.e  = tetris_eval_e(t);
@@ -155,35 +185,30 @@ static inline void tetris_eval(tetris_t *t)
 }
 
 /**
- * −l + e − ∆r − ∆c − L − W - D - R
+ * −l + e − ∆r − ∆c − 4L − W - D - R
  */
-double tetris_score_get(tetris_t *t)
+static inline double tetris_score_get(tetris_t *t)
 {
     return
         EVAL(t->_e.l,  _Il)  +
         EVAL(t->_e.e,  _Ie)  +
         EVAL(t->_e.dr, _Idr) +
         EVAL(t->_e.dc, _Idc) +
-        EVAL(t->_e.L,  _IL)  +
+        EVAL(t->_e.L,  _IL)  * 4 +
         EVAL(t->_e.W,  _IW);
         /* EVAL(t->_e.R,  _IR); */
 }
 
-typedef struct {
-    int8_t x;
-    int8_t r;
-    push_t p;
-} ai_move_t;
-
-static inline void tetris_ai_process(tetris_t  *t,
-                                     item_t     item,
-                                     double    *score,
-                                     ai_move_t *mv)
+static inline push_t tetris_ai_process(tetris_t *t,
+                                       item_t    item,
+                                       double   *score,
+                                       move_t   *mv)
 {
     double   tmp_score = 0;
     uint8_t  x = 0;
     uint8_t  r = 0;
     tetris_t t_eval;
+    push_t   _push = NULL;
 
     uint32_t _R   = tetris_item_nr_R_get(item);
     push_t   push = tetris_item_push_get(item);
@@ -196,7 +221,7 @@ static inline void tetris_ai_process(tetris_t  *t,
                 continue;
             }
 
-            tetris_map_update(&t_eval);
+            tetris_wall_update(&t_eval);
 
             tetris_eval(&t_eval);
             tmp_score = tetris_score_get(&t_eval);
@@ -209,40 +234,67 @@ static inline void tetris_ai_process(tetris_t  *t,
                 *score = tmp_score;
                 mv->x = x;
                 mv->r = r;
-                mv->p = push;
+                _push = push;
                 if (_X_) {
                     tetris_x_score_dump(&t_eval, x, r, *score);
                 }
             }
         }
     }
+
+    return _push;
 }
 
 int tetris_ai(tetris_t *t,
-              item_t    item)
+              item_t    curr_item,
+              item_t   *items,
+              move_t   *mv)
 {
     double score = -DBL_MAX;
+    push_t push = NULL;
+    push_t hold_push = NULL;
 
-    ai_move_t mv = {
-        .x = -1,
-        .r = -1,
-        .p = NULL,
-    };
+    mv->x = -1;
+    mv->r = -1;
+    mv->hold = 0;
 
     if (_X_) {
         tetris_x_eval_init();
     }
 
-    tetris_ai_process(t, item, &score, &mv);
+    if (t->nr_items == 0 &&
+        (curr_item == _S || curr_item == _Z)) {
+        tetris_hold_set(t, curr_item);
+        ++t->nr_items;
+        return 0;
+    }
+
+    push = tetris_ai_process(t, curr_item, &score, mv);
+
+    if (tetris_hold_is_empty(t) == 0 && t->nr_items != 1 && t->hold != curr_item) {
+        hold_push = tetris_ai_process(t, t->hold, &score, mv);
+    }
+
+    if (tetris_hold_is_empty(t) && t->nr_items != 0 && (t->score - score > GAP_SCORE_HOLD)) {
+        tetris_hold_set(t, curr_item);
+        return 0;
+    }
+
+    if (hold_push != NULL) {
+        tetris_hold_set(t, curr_item);
+        push = hold_push;
+    }
 
     /**
-     * - Game Over -
+     * --- Game Over ---
      */
-    if (mv.x == -1) {
+    if (mv->x == -1) {
         return -1;
     }
 
-    mv.p(t, mv.r, mv.x);
+    push(t, mv->r, mv->x);
+    ++t->nr_items;
+    t->score = score;
 
     return 0;
 }

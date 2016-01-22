@@ -41,7 +41,7 @@ static inline int tetris_I1_push(tetris_t *t,
 
     h = _H - h - 1;
 
-    /* Update the map */
+    /* Update the wall*/
     _SET(t, x, h, _I);
     _SET(t, x + 1, h, _I);
     _SET(t, x + 2, h, _I);

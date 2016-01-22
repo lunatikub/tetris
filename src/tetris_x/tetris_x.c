@@ -1,5 +1,6 @@
 #include <curses.h>
 
+#include "tetris_wall.h"
 #include "tetris_x.h"
 
 #define SO (5) /* Start offset */
@@ -21,128 +22,45 @@ int tetris_x_init()
     return 0;
 }
 
-static inline void I1_dump(int x, int y)
+static inline void I_dump(int x, int y)
 {
     mvprintw(y, x, "XXXX");
 }
 
-static inline void I2_dump(int x, int y)
-{
-    mvprintw(y, x, "X");
-    mvprintw(y + 1, x, "X");
-    mvprintw(y + 2, x, "X");
-    mvprintw(y + 3, x, "X");
-}
-
-static inline void J1_dump(int x, int y)
+static inline void J_dump(int x, int y)
 {
     mvprintw(y, x, "X");
     mvprintw(y + 1, x, "XXX");
 }
 
-static inline void J2_dump(int x, int y)
-{
-    mvprintw(y, x, "XX");
-    mvprintw(y + 1, x, "X");
-    mvprintw(y + 2, x, "X");
-}
-
-static inline void J3_dump(int x, int y)
-{
-    mvprintw(y, x, "XXX");
-    mvprintw(y + 1, x + 2, "X");
-}
-
-static inline void J4_dump(int x, int y)
-{
-    mvprintw(y, x + 1, "X");
-    mvprintw(y + 1, x + 1, "X");
-    mvprintw(y + 2, x, "XX");
-}
-
-static inline void L1_dump(int x, int y)
+static inline void L_dump(int x, int y)
 {
     mvprintw(y, x + 2, "X");
     mvprintw(y + 1, x, "XXX");
 }
 
-static inline void L2_dump(int x, int y)
-{
-    mvprintw(y, x, "X");
-    mvprintw(y + 1, x, "X");
-    mvprintw(y + 2, x, "XX");
-}
-
-static inline void L3_dump(int x, int y)
-{
-    mvprintw(y, x, "XXX");
-    mvprintw(y + 1, x, "X");
-}
-
-static inline void L4_dump(int x, int y)
-{
-    mvprintw(y, x, "XX");
-    mvprintw(y + 1, x + 1, "X");
-    mvprintw(y + 2, x + 1, "X");
-}
-
-
-static inline void O1_dump(int x, int y)
+static inline void O_dump(int x, int y)
 {
     mvprintw(y, x, "XX");
     mvprintw(y + 1, x, "XX");
 }
 
-static inline void S1_dump(int x, int y)
+static inline void S_dump(int x, int y)
 {
     mvprintw(y, x + 1, "XX");
     mvprintw(y + 1, x, "XX");
 }
 
-static inline void S2_dump(int x, int y)
-{
-    mvprintw(y, x, "X");
-    mvprintw(y + 1, x, "XX");
-    mvprintw(y + 2, x + 1, "X");
-}
-
-static inline void T1_dump(int x, int y)
+static inline void T_dump(int x, int y)
 {
     mvprintw(y, x + 1, "X");
     mvprintw(y + 1, x, "XXX");
 }
 
-static inline void T2_dump(int x, int y)
-{
-    mvprintw(y, x, "X");
-    mvprintw(y + 1, x, "XX");
-    mvprintw(y + 2, x, "X");
-}
-
-static inline void T3_dump(int x, int y)
-{
-    mvprintw(y, x, "XXX");
-    mvprintw(y + 1, x + 1, "X");
-}
-
-static inline void T4_dump(int x, int y)
-{
-    mvprintw(y, x + 1, "X");
-    mvprintw(y + 1, x, "XX");
-    mvprintw(y + 2, x + 1, "X");
-}
-
-static inline void Z1_dump(int x, int y)
+static inline void Z_dump(int x, int y)
 {
     mvprintw(y, x, "XX");
     mvprintw(y + 1, x + 1, "XX");
-}
-
-static inline void Z2_dump(int x, int y)
-{
-    mvprintw(y, x + 1, "X");
-    mvprintw(y + 1, x, "XX");
-    mvprintw(y + 2, x, "X");
 }
 
 static inline char item2char(item_t item)
@@ -180,8 +98,8 @@ static inline int item2color(item_t item)
 #define SOX_EVAL (75)
 #define SOY_EVAL (2)
 
-#define _XM (25)
-#define _YM (28)
+#define _XM (12)
+#define _YM (23)
 
 static uint32_t _n = 0;
 
@@ -195,22 +113,14 @@ void tetris_x_eval_dump(tetris_t *t,
                         uint8_t   r,
                         double    score)
 {
-    uint8_t xm = (_n) % 4;
-    uint8_t ym = ((_n) / 4) % 2;
+    uint8_t xm = (_n) % 9;
+    uint8_t ym = ((_n) / 9) % 2;
 
     mvprintw(SOY_EVAL + ym * _YM, SOX_EVAL + xm * _XM,
              "x:%u r:%u", _x, r);
 
     mvprintw(SOY_EVAL + ym * _YM + 1, SOX_EVAL + xm * _XM,
-             "l:%-2i e:%-2i dr: %-2i dc:%-2i",
-             t->_e.l, t->_e.e, t->_e.dr, t->_e.dc);
-
-    mvprintw(SOY_EVAL + ym * _YM + 2, SOX_EVAL + xm * _XM,
-             "L:%-2i W:%-2i R:%-2i",
-             t->_e.L, t->_e.W, t->_e.R);
-
-    mvprintw(SOY_EVAL + ym * _YM + 3, SOX_EVAL + xm * _XM,
-             "%f", score);
+             "%.4f", score);
 
     uint8_t x = 0;
     uint8_t y = 0;
@@ -218,12 +128,15 @@ void tetris_x_eval_dump(tetris_t *t,
     for (x = 0; x < _W; ++x) {
         for (y = 0; y < _H; ++y) {
             char c = _GET(t, x, y) ? 'X' : '.';
-            mvprintw(SOY_EVAL + ym * _YM + 4 + y, SOX_EVAL + xm * _XM + x,
+            mvprintw(SOY_EVAL + ym * _YM + 2 + y, SOX_EVAL + xm * _XM + x,
                      "%c", c);
         }
     }
 
     refresh();
+    if (_D_ == 2) {
+        getchar();
+    }
     ++_n;
 }
 
@@ -232,8 +145,9 @@ void tetris_x_score_dump(tetris_t *t,
                          uint8_t   _r,
                          double    score)
 {
-    mvprintw(10, 45, "Best Score: %f", score);
-    mvprintw(11, 45, "x: %u r: %u", _x, _r);
+    mvprintw(0, 45, "- Best Wall -", score);
+    mvprintw(1, 45, "%.4f", score);
+    mvprintw(2, 45, "x: %u r: %u", _x, _r);
 
     uint8_t x = 0;
     uint8_t y = 0;
@@ -241,13 +155,68 @@ void tetris_x_score_dump(tetris_t *t,
     for (x = 0; x < _W; ++x) {
         for (y = 0; y < _H; ++y) {
             char c = _GET(t, x, y) ? 'X' : '.';
-            mvprintw(12 + y, 45 + x, "%c", c);
+            mvprintw(3 + y, 45 + x, "%c", c);
         }
     }
 }
 
+static inline void tetris_x_item_dump(item_t  item,
+                                      uint8_t x,
+                                      uint8_t y)
+{
+    int color = item2color(item);
+
+    uint8_t _x = 0;
+    uint8_t _y = 0;
+
+    for (_x = x; _x < x + 8; ++_x) {
+        for (_y = y; _y < y + 6; ++_y) {
+            mvprintw(_y, _x, " ");
+        }
+    }
+
+    mvprintw(y, x, "+-----+");
+    mvprintw(y + 1, x, "|");
+    mvprintw(y + 1, x + 6, "|");
+    mvprintw(y + 2, x, "|");
+    mvprintw(y + 2, x + 6, "|");
+    mvprintw(y + 3, x, "|");
+    mvprintw(y + 3, x + 6, "|");
+    mvprintw(y + 4, x, "|");
+    mvprintw(y + 4, x + 6, "|");
+    mvprintw(y + 5, x, "+-----+");
+
+    attron(COLOR_PAIR(color));
+    switch(item) {
+        case _I: I_dump(x + 1, y + 1); break;
+        case _J: J_dump(x + 1, y + 1); break;
+        case _L: L_dump(x + 1, y + 1); break;
+        case _O: O_dump(x + 1, y + 1); break;
+        case _S: S_dump(x + 1, y + 1); break;
+        case _T: T_dump(x + 1, y + 1); break;
+        case _Z: Z_dump(x + 1, y + 1); break;
+        default: ;
+    }
+    attroff(COLOR_PAIR(color));
+}
+
+static inline void tetris_x_items_dump(item_t  curr_item,
+                                       item_t  hold_item,
+                                       item_t *items)
+{
+    uint32_t i = 0;
+
+    tetris_x_item_dump(curr_item, 2, 32);
+    tetris_x_item_dump(hold_item, 10, 32);
+
+    for (i = 0; i < _ITEM; ++i) {
+        tetris_x_item_dump(items[i], 2 + i * 6, 38);
+    }
+}
+
 void tetris_x_main_dump(tetris_t *t,
-                        item_t    item)
+                        item_t    curr_item,
+                        item_t   *items)
 {
     uint32_t x = 0;
     uint32_t y = 0;
@@ -285,10 +254,16 @@ void tetris_x_main_dump(tetris_t *t,
         mvprintw(_H + 4 + SO, x * M + SO, "%-2u", t->hole[x]);
     }
 
-    mvprintw(SO, _W * M + 3 * SO , "next item: [%c]", item2char(item));
-    mvprintw(SO + 1, _W * M + 3 * SO, "nr_line:   [%10u]", t->nr_completed);
+    mvprintw(1, 1, "nr_line:   [%10u]", t->nr_completed);
+    mvprintw(2, 1, "nr_hold:   [%10u]", t->nr_hold);
+    mvprintw(3, 1, "nr_items:  [%10u]", t->nr_items);
+
+    tetris_x_items_dump(curr_item, t->hold, items);
 
     refresh();
+    if (_D_) {
+        getchar();
+    }
 }
 
 int tetris_x_clean()

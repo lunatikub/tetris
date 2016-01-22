@@ -6,53 +6,49 @@
 #include <stdlib.h>
 
 #define _X_ (1)
+/**
+ * LELVE 0 --> No pause.
+ * LEVEL 1 --> Pause at 'main_dump'.
+ * LEVEL 2 --> Pause at 'main_dump' and 'eval_dump'.
+ * LEVEL 3 --> Pause at 'main_dump' and wait 100ms 'eval_dump'
+ */
+#define _D_ (0)
 
-#define _W (10)
-#define _H (20)
-
-#define _GET(t,x,y) ((t)->map[((y) * _W) + (x)])
-
-#define _SET(t,x,y,I)                                                   \
-    ({                                                                  \
-        if ((t)->map[((y) * _W) + (x)] != 0) {                          \
-            fprintf(stderr, " override %s %u", __FUNCTION__, __LINE__); \
-            fprintf(stderr, " x: %u y: %u ", x, y);                     \
-            fprintf(stderr, " last: %u ", (t)->map[((y) * _W) + (x)]);  \
-            getchar();                                                  \
-            abort();                                                    \
-        }                                                               \
-        ((t)->map[((y) * _W) + (x)] = I);                               \
-        ((t)->n[y]++);                                                  \
-    })
+/**
+ * Configuration
+ */
+#define _ITEM (5)
+#define _W    (10)
+#define _H    (20)
 
 typedef struct {
-    int l;
-    int e;
-    int dr;
-    int dc;
-    int L;
-    int W;
-    int R;
+    uint8_t hold;
+    int8_t  x;
+    int8_t  r;
+} move_t;
+
+typedef struct {
+    int l;  /* Last item height. */
+    int e;  /* Number of cleared lines with the last item. */
+    int dr; /* Number of transitions between full/empty cell for each lines. */
+    int dc; /* Number of transitions between full/empty cell for each cols. */
+    int L;  /* Number of holes. */
+    int W;  /* Depth of wells. */
+    int R;  /* Number of lines with at least a hole (NOT USED). */
 } eval_t;
 
 typedef struct {
-    uint8_t  map[_W * _H];
-    uint8_t  h[_W];
-    uint8_t  hole[_W];
-    uint8_t  n[_H];
-    uint8_t  nr_last_completed;
-    uint32_t nr_completed;
-    eval_t   _e;
-    uint8_t  hold;
+    uint8_t  wall[_W * _H];     /* Wall. */
+    uint8_t  h[_W];             /* Height of a col. */
+    uint8_t  hole[_W];          /* Number of holes by col. */
+    uint8_t  n[_H];             /* Number of cells by line. */
+    uint8_t  nr_last_completed; /* Number of completed lines from the last move. */
+    uint32_t nr_completed;      /* Number of completed lines. */
+    uint32_t nr_items;          /* Number of items played. */
+    eval_t   _e;                /* Current evaluation of the wall. */
+    uint8_t  hold;              /* Hold item. */
+    uint32_t nr_hold;           /* Number of hold switchs. */
+    double   score;             /* Current score of the Wall. */
 } tetris_t;
-
-#define TETRIS_ERR(msg)                                         \
-    ({                                                          \
-        fprintf(stderr, "Error:    %s\n", msg);                 \
-        fprintf(stderr, "Line:     %u\n", __LINE__);            \
-        fprintf(stderr, "Function: %s\n", __FUNCTION__);        \
-        fprintf(stderr, "File:     %s\n", __FILE__);            \
-        exit(1);                                                \
-    })
 
 #endif /* !TETRIS_H_ */

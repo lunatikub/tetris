@@ -11,7 +11,8 @@ int tetris_x_clean();
 item_t tetris_x_next_item_get();
 
 void tetris_x_main_dump(tetris_t *t,
-                        item_t    item);
+                        item_t    curr_item,
+                        item_t   *items);
 
 void tetris_x_eval_dump(tetris_t *t,
                         uint8_t   _x,

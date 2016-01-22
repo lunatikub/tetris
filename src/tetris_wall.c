@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "tetris_map.h"
+#include "tetris_wall.h"
 
 static inline int tetris_hole_update(tetris_t *t)
 {
@@ -32,8 +32,8 @@ static inline void tetris_completed_line_update(tetris_t *t,
     uint8_t x = 0;
     uint8_t y = 0;
 
-    memmove(&t->map[_W], &t->map[0], n * _W);
-    memset(&t->map[0], 0, _W);
+    memmove(&t->wall[_W], &t->wall[0], n * _W);
+    memset(&t->wall[0], 0, _W);
     for (x = 0; x < _W; ++x) {
         y = 0;
         while (y < _H && _GET(t, x, y) == 0) {
@@ -45,7 +45,7 @@ static inline void tetris_completed_line_update(tetris_t *t,
     t->n[0] = 0;
 }
 
-void tetris_map_update(tetris_t *t)
+void tetris_wall_update(tetris_t *t)
 {
     uint8_t n = 0;
 

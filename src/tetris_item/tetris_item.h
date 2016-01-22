@@ -2,6 +2,7 @@
 # define TETRIS_ITEM_H_
 
 #include "tetris.h"
+#include "tetris_wall.h"
 
 #define OUT_OF_BOUND (-1)
 #define BAD_ITEM     (-2)

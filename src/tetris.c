@@ -6,10 +6,10 @@
 
 #include "tetris.h"
 #include "tetris_ai.h"
-#include "tetris_map.h"
+#include "tetris_wall.h"
 #include "tetris_x.h"
 
-static inline item_t tetris_emul_next_item_get(void)
+static inline item_t tetris_item_rand(void)
 {
     static item_t last_item = INIT_ITEM;
     item_t item = rand() % _Z + 1;
@@ -22,14 +22,31 @@ static inline item_t tetris_emul_next_item_get(void)
     return item;
 }
 
+static inline void tetris_item_fill(item_t *item)
+{
+    uint8_t i = 0;
+
+    for (i = 0; i < _ITEM; ++i) {
+        item[i] = tetris_item_rand();
+    }
+}
+
+static inline item_t tetris_item_next(item_t *item)
+{
+    uint8_t i = 0;
+    item_t curr = item[0];
+
+    for (i = 0; i < _ITEM - 1; ++i) {
+        item[i] = item[i + 1];
+    }
+    item[i] = tetris_item_rand();
+
+    return curr;
+}
+
 static inline int tetris_init(tetris_t *t)
 {
-    memset(t->map, 0, _W * _H * sizeof(uint8_t));
-    memset(t->h, 0, _W * sizeof(uint8_t));
-    memset(t->hole, 0, _W * sizeof(uint8_t));
-    memset(t->n, 0, _H * sizeof(uint8_t));
-    t->nr_completed = 0;
-    t->nr_last_completed = 0;
+    memset(t, 0, sizeof(tetris_t));
 
     srand(time(NULL));
 
@@ -55,22 +72,37 @@ int main(void)
 {
     tetris_t t;
 
-    item_t item = INIT_ITEM;
+    item_t items[_ITEM] = { INIT_ITEM };
+    item_t curr_item = INIT_ITEM;
 
     if (tetris_init(&t)) {
-        TETRIS_ERR("Init");
+        return -1;
     }
 
+    move_t mv = {
+        .x = -1,
+        .r = -1,
+        .hold = 0,
+    };
+
+    tetris_item_fill(items);
+
     for (;;) {
-        item  = tetris_emul_next_item_get();
+        curr_item  = tetris_item_next(items);
+
         if (_X_) {
-            tetris_x_main_dump(&t, item);
+            tetris_x_main_dump(&t, curr_item, items);
         }
-        /* tetris_emul_game(&t, item); */
-        if (tetris_ai(&t, item)) {
-            break;
+
+        if (tetris_ai(&t, curr_item, items, &mv)) {
+            break; /* Game Over */
         }
-        tetris_map_update(&t);
+
+        tetris_wall_update(&t);
+    }
+
+    if (_X_) {
+        getchar();
     }
 
     if (tetris_clean(&t)) {

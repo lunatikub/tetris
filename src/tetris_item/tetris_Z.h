@@ -38,7 +38,7 @@ static inline int tetris_Z1_push(tetris_t *t,
 
     h = _H - h - 1;
 
-    /* Update the map */
+    /* Update the wall*/
     _SET(t, x, h, _Z);
     _SET(t, x + 1, h + 1, _Z);
     _SET(t, x + 1, h, _Z);
@@ -67,7 +67,7 @@ static inline int tetris_Z2_push(tetris_t *t,
     h = t->h[x];
     if (t->h[x + 1] > 1 &&
         t->h[x + 1] - 1 > h) {
-        h = t->h[x + 1]; /* XXX */
+        h = t->h[x + 1] - 1; /* XXX */
     }
 
     if (h + _HZ2 > _H) {
@@ -82,7 +82,7 @@ static inline int tetris_Z2_push(tetris_t *t,
 
     h = _H - h - 1;
 
-    /* Update the map */
+    /* Update the wall*/
     _SET(t, x, h, _Z);
     _SET(t, x, h - 1, _Z);
     _SET(t, x + 1, h - 1, _Z);
