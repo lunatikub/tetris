@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define _X_ (1)
+#define _X_ (0)
 /**
  * LELVE 0 --> No pause.
  * LEVEL 1 --> Pause at 'main_dump'.

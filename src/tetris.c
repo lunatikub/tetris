@@ -98,6 +98,10 @@ int main(void)
             break; /* Game Over */
         }
 
+        if (_X_ == 0 && (t.nr_items % 100 == 0)) {
+            printf("%10u\r", t.nr_completed);
+        }
+
         tetris_wall_update(&t);
     }
 
@@ -110,7 +114,7 @@ int main(void)
     }
 
     if (_X_ == 0) {
-        printf("%u\n", t.nr_completed);
+        printf("\n%u\n", t.nr_completed);
     }
 
     return 0;
