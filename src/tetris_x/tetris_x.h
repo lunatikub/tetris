@@ -2,7 +2,7 @@
 # define TETRIS_X_H_
 
 #include "tetris_item.h"
-#include "tetris_ia.h"
+#include "tetris_ai.h"
 
 int tetris_x_init();
 

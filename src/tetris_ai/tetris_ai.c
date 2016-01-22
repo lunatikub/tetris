@@ -3,7 +3,7 @@
 #include <string.h>
 #include <float.h>
 
-#include "tetris_ia.h"
+#include "tetris_ai.h"
 #include "tetris_map.h"
 #include "tetris_x.h"
 
@@ -173,12 +173,12 @@ typedef struct {
     int8_t x;
     int8_t r;
     push_t p;
-} ia_move_t;
+} ai_move_t;
 
-static inline void tetris_ia_process(tetris_t  *t,
+static inline void tetris_ai_process(tetris_t  *t,
                                      item_t     item,
                                      double    *score,
-                                     ia_move_t *mv)
+                                     ai_move_t *mv)
 {
     double   tmp_score = 0;
     uint8_t  x = 0;
@@ -218,12 +218,12 @@ static inline void tetris_ia_process(tetris_t  *t,
     }
 }
 
-int tetris_ia(tetris_t *t,
+int tetris_ai(tetris_t *t,
               item_t    item)
 {
     double score = -DBL_MAX;
 
-    ia_move_t mv = {
+    ai_move_t mv = {
         .x = -1,
         .r = -1,
         .p = NULL,
@@ -233,7 +233,7 @@ int tetris_ia(tetris_t *t,
         tetris_x_eval_init();
     }
 
-    tetris_ia_process(t, item, &score, &mv);
+    tetris_ai_process(t, item, &score, &mv);
 
     /**
      * - Game Over -

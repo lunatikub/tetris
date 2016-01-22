@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #include "tetris.h"
-#include "tetris_ia.h"
+#include "tetris_ai.h"
 #include "tetris_map.h"
 #include "tetris_x.h"
 
@@ -67,7 +67,7 @@ int main(void)
             tetris_x_main_dump(&t, item);
         }
         /* tetris_emul_game(&t, item); */
-        if (tetris_ia(&t, item)) {
+        if (tetris_ai(&t, item)) {
             break;
         }
         tetris_map_update(&t);

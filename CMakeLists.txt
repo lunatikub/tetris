@@ -3,7 +3,7 @@ project (tetris_IA)
 
 include_directories(
         src
-        src/tetris_ia
+        src/tetris_ai
         src/tetris_x
         src/tetris_item
 )
