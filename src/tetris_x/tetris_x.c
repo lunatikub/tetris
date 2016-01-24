@@ -111,7 +111,7 @@ void tetris_x_eval_init(void)
 void tetris_x_eval_dump(tetris_t *t,
                         uint8_t   _x,
                         uint8_t   r,
-                        double    score)
+                        int       score)
 {
     uint8_t xm = (_n) % 9;
     uint8_t ym = ((_n) / 9) % 2;
@@ -120,7 +120,7 @@ void tetris_x_eval_dump(tetris_t *t,
              "x:%u r:%u", _x, r);
 
     mvprintw(SOY_EVAL + ym * _YM + 1, SOX_EVAL + xm * _XM,
-             "%.4f", score);
+             "%i", score);
 
     uint8_t x = 0;
     uint8_t y = 0;
@@ -143,11 +143,11 @@ void tetris_x_eval_dump(tetris_t *t,
 void tetris_x_score_dump(tetris_t *t,
                          uint8_t   _x,
                          uint8_t   _r,
-                         double    score)
+                         int       score)
 {
-    mvprintw(0, 45, "- Best Wall -", score);
-    mvprintw(1, 45, "%.4f", score);
-    mvprintw(2, 45, "x: %u r: %u", _x, _r);
+    mvprintw(1, 45, "- Best Wall -");
+    mvprintw(2, 45, "%i", score);
+    mvprintw(3, 45, "x: %u r: %u", _x, _r);
 
     uint8_t x = 0;
     uint8_t y = 0;

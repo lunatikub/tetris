@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <float.h>
+#include <limits.h>
 
 #include "tetris_ai.h"
 #include "tetris_wall.h"
@@ -149,29 +149,12 @@ static inline int tetris_eval_W(tetris_t *t)
     return well;
 }
 
-/**
- * XXX
- */
-static inline int tetris_eval_R(tetris_t *t)
-{
-    int x = 0;
-    int nr = 0;
-
-    for (x = 0; x < _W; ++x) {
-        if (t->hole[x] > 0) {
-            ++nr;
-        }
-    }
-
-    return nr;
-}
-
 #include "tetris_influence.h"
 
 /**
  * Value / Influence
  */
-#define EVAL(v,i) (((double)(v)) * i)
+#define EVAL(v,i) (((int)(v)) * i)
 
 void tetris_eval(tetris_t *t)
 {
@@ -181,13 +164,12 @@ void tetris_eval(tetris_t *t)
     t->_e.dc = tetris_eval_dc(t);
     t->_e.L  = tetris_eval_L(t);
     t->_e.W  = tetris_eval_W(t);
-    /* t->_e.R  = tetris_eval_R(t); */
 }
 
 /**
  * −l + e − ∆r − ∆c − 4L − W - D - R
  */
-static inline double tetris_score_get(tetris_t *t)
+static inline int tetris_score_get(tetris_t *t)
 {
     return
         EVAL(t->_e.l,  _Il)  +
@@ -196,19 +178,18 @@ static inline double tetris_score_get(tetris_t *t)
         EVAL(t->_e.dc, _Idc) +
         EVAL(t->_e.L,  _IL)  * 4 +
         EVAL(t->_e.W,  _IW);
-        /* EVAL(t->_e.R,  _IR); */
 }
 
 static inline push_t tetris_ai_process(tetris_t *t,
                                        item_t    item,
-                                       double   *score,
+                                       int      *score,
                                        move_t   *mv)
 {
-    double   tmp_score = 0;
-    uint8_t  x = 0;
-    uint8_t  r = 0;
+    int      tmp_score = 0;
+    uint8_t  x         = 0;
+    uint8_t  r         = 0;
     tetris_t t_eval;
-    push_t   _push = NULL;
+    push_t   _push     = NULL;
 
     uint32_t _R   = tetris_item_nr_R_get(item);
     push_t   push = tetris_item_push_get(item);
@@ -250,8 +231,8 @@ int tetris_ai(tetris_t *t,
               item_t   *items,
               move_t   *mv)
 {
-    double score = -DBL_MAX;
-    push_t push = NULL;
+    int    score     = -INT_MAX;
+    push_t push      = NULL;
     push_t hold_push = NULL;
 
     mv->x = -1;

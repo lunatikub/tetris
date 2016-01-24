@@ -5,14 +5,13 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define _X_ (0)
+#define _X_ (1)
 /**
  * LELVE 0 --> No pause.
  * LEVEL 1 --> Pause at 'main_dump'.
  * LEVEL 2 --> Pause at 'main_dump' and 'eval_dump'.
- * LEVEL 3 --> Pause at 'main_dump' and wait 100ms 'eval_dump'
  */
-#define _D_ (0)
+#define _D_ (1)
 
 /**
  * Configuration
@@ -48,7 +47,7 @@ typedef struct {
     eval_t   _e;                /* Current evaluation of the wall. */
     uint8_t  hold;              /* Hold item. */
     uint32_t nr_hold;           /* Number of hold switchs. */
-    double   score;             /* Current score of the Wall. */
+    int      score;             /* Current score of the Wall. */
 } tetris_t;
 
 #endif /* !TETRIS_H_ */

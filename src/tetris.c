@@ -8,6 +8,7 @@
 #include "tetris_ai.h"
 #include "tetris_wall.h"
 #include "tetris_x.h"
+#include "tetris_tree.h"
 
 static inline item_t tetris_item_rand(void)
 {
@@ -84,6 +85,28 @@ int main(void)
         .r = -1,
         .hold = 0,
     };
+
+    /* tt_t root; */
+    /* tetris_tt_init(&root); */
+
+    /* tetris_t t1; */
+
+    /* t1.hold = 1; */
+    /* tetris_tt_insert(&root, &t1, 100); */
+
+    /* t1.hold = 2; */
+    /* tetris_tt_insert(&root, &t1, 200); */
+
+    /* uint8_t i = 0; */
+
+    /* printf("--> "); */
+    /* for (; i < _NTD; ++i) { */
+    /*     if (root.t[i]) { */
+    /*         printf("%u\n", root.t[i]->hold); */
+    /*     } */
+    /* } */
+
+    /* return 0; */
 
     tetris_item_fill(items);
 

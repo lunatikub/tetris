@@ -17,13 +17,13 @@ void tetris_x_main_dump(tetris_t *t,
 void tetris_x_eval_dump(tetris_t *t,
                         uint8_t   _x,
                         uint8_t   r,
-                        double    score);
+                        int       score);
 
 void tetris_x_eval_init(void);
 
 void tetris_x_score_dump(tetris_t *t,
                          uint8_t   x,
                          uint8_t   r,
-                         double    score);
+                         int       score);
 
 #endif /* !TETRIS_X_H_ */
