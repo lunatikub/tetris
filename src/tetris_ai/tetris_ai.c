@@ -115,7 +115,6 @@ static inline int tetris_well_sum(int h_well)
 static inline int tetris_eval_W(tetris_t *t)
 {
     int x = 0;
-    int y = 0;
 
     int well = 0;
     int h_last = 0;
@@ -235,6 +234,8 @@ int tetris_ai(tetris_t *t,
     push_t push      = NULL;
     push_t hold_push = NULL;
 
+    (void)items;
+
     mv->x = -1;
     mv->r = -1;
     mv->hold = 0;
@@ -264,6 +265,7 @@ int tetris_ai(tetris_t *t,
     if (hold_push != NULL) {
         tetris_hold_set(t, curr_item);
         push = hold_push;
+        mv->hold = 1;
     }
 
     /**

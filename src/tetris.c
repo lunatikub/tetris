@@ -8,7 +8,7 @@
 #include "tetris_ai.h"
 #include "tetris_wall.h"
 #include "tetris_x.h"
-#include "tetris_tree.h"
+#include "tetris_x11_keyboard.h"
 
 static inline item_t tetris_item_rand(void)
 {
@@ -23,7 +23,7 @@ static inline item_t tetris_item_rand(void)
     return item;
 }
 
-static inline void tetris_item_fill(item_t *item)
+static inline void tetris_simu_item_fill(item_t *item)
 {
     uint8_t i = 0;
 
@@ -32,7 +32,7 @@ static inline void tetris_item_fill(item_t *item)
     }
 }
 
-static inline item_t tetris_item_next(item_t *item)
+static inline item_t tetris_simu_item_next(item_t *item)
 {
     uint8_t i = 0;
     item_t curr = item[0];
@@ -69,16 +69,24 @@ static inline int tetris_clean(tetris_t *t)
     return 0;
 }
 
-int main(void)
+static inline FILE* tetris_open_cfg(const char *cfg_name)
+{
+    FILE *cfg = NULL;
+
+    if ((cfg = fopen(cfg_name, "r")) == NULL) {
+        return NULL;
+    }
+
+    return cfg;
+}
+
+int main(int argc, char **argv)
 {
     tetris_t t;
+    tetris_x11_t t11;
 
     item_t items[_ITEM] = { INIT_ITEM };
     item_t curr_item = INIT_ITEM;
-
-    if (tetris_init(&t)) {
-        return -1;
-    }
 
     move_t mv = {
         .x = -1,
@@ -86,46 +94,50 @@ int main(void)
         .hold = 0,
     };
 
-    /* tt_t root; */
-    /* tetris_tt_init(&root); */
+    int k[MAX_KEYS_SZ] = { };
+    int nr = 0;
 
-    /* tetris_t t1; */
+    if (_S_) {
+        tetris_simu_item_fill(items);
+    } else {
+        if (argc != 2) {
+            fprintf(stderr, "usage _S_(0): ./tetris cfg\n");
+            return -1;
+        }
+        FILE *cfg = tetris_open_cfg(argv[1]);
+        tetris_x11_init(&t11);
+        tetris_x11_config_load(&t11, cfg);
+        fclose(cfg);
+        tetris_x11_game_start(&t11, items, &curr_item);
+        printf("go focus the tetris...\n");
+        sleep(2);
+    }
 
-    /* t1.hold = 1; */
-    /* tetris_tt_insert(&root, &t1, 100); */
-
-    /* t1.hold = 2; */
-    /* tetris_tt_insert(&root, &t1, 200); */
-
-    /* uint8_t i = 0; */
-
-    /* printf("--> "); */
-    /* for (; i < _NTD; ++i) { */
-    /*     if (root.t[i]) { */
-    /*         printf("%u\n", root.t[i]->hold); */
-    /*     } */
-    /* } */
-
-    /* return 0; */
-
-    tetris_item_fill(items);
+    if (tetris_init(&t)) {
+        return -1;
+    }
 
     for (;;) {
-        curr_item  = tetris_item_next(items);
-
+        if (_S_) {
+            curr_item  = tetris_simu_item_next(items);
+        }
         if (_X_) {
             tetris_x_main_dump(&t, curr_item, items);
         }
-
         if (tetris_ai(&t, curr_item, items, &mv)) {
             break; /* Game Over */
         }
-
         if (_X_ == 0 && (t.nr_items % 100 == 0)) {
             printf("%10u\r", t.nr_completed);
         }
-
         tetris_wall_update(&t);
+        if (_S_ == 0) {
+            nr = 0;
+            tetris_move2keys(curr_item, &mv, k, &nr);
+            tetris_x11_keyboard_press(&t11, k, nr);
+            usleep(500000);
+            curr_item = tetris_x11_item_next(&t11, items);
+        }
     }
 
     if (_X_) {
@@ -142,3 +154,14 @@ int main(void)
 
     return 0;
 }
+
+    /* tetris_move2keys(_J, &mv, k, &nr); */
+
+    /* int i = 0; */
+    /* printf("@"); */
+    /* for (; i < nr; ++i) { */
+    /*     printf("%c", k2c(k[i])); */
+    /* } */
+    /* printf("@\n"); */
+
+    /* return 0; */

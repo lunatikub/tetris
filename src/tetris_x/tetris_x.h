@@ -4,6 +4,12 @@
 #include "tetris_item.h"
 #include "tetris_ai.h"
 
+/**
+ * ncurses extension colors
+ */
+#define COLOR_ORANGE (8)
+#define COLOR_PURPLE (9)
+
 int tetris_x_init();
 
 int tetris_x_clean();

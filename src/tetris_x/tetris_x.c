@@ -19,6 +19,12 @@ int tetris_x_init()
     init_pair(6, COLOR_CYAN, COLOR_BLACK);
     init_pair(7, COLOR_WHITE, COLOR_BLACK);
 
+    init_color(COLOR_ORANGE, 1000, 640, 0);
+    init_pair(8, COLOR_ORANGE, COLOR_BLACK);
+
+    init_color(COLOR_PURPLE, 640, 128, 960);
+    init_pair(9, COLOR_PURPLE, COLOR_BLACK);
+
     return 0;
 }
 
@@ -29,13 +35,13 @@ static inline void I_dump(int x, int y)
 
 static inline void J_dump(int x, int y)
 {
-    mvprintw(y, x, "X");
+    mvprintw(y, x + 2, "X");
     mvprintw(y + 1, x, "XXX");
 }
 
 static inline void L_dump(int x, int y)
 {
-    mvprintw(y, x + 2, "X");
+    mvprintw(y, x, "X");
     mvprintw(y + 1, x, "XXX");
 }
 
@@ -82,13 +88,13 @@ static inline char item2char(item_t item)
 static inline int item2color(item_t item)
 {
     switch (item) {
-        case _I: return 1;
-        case _J: return 2;
-        case _L: return 3;
-        case _O: return 4;
-        case _S: return 5;
-        case _T: return 6;
-        case _Z: return 7;
+        case _I: return 6;
+        case _J: return 8;
+        case _L: return 4;
+        case _O: return 3;
+        case _S: return 2;
+        case _T: return 9;
+        case _Z: return 1;
         default: return 0;
     };
 

@@ -5,13 +5,23 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define _X_ (1)
+/**
+ * Ncurses display
+ */
+#define _X_ (0)
+
 /**
  * LELVE 0 --> No pause.
  * LEVEL 1 --> Pause at 'main_dump'.
  * LEVEL 2 --> Pause at 'main_dump' and 'eval_dump'.
  */
-#define _D_ (1)
+#define _D_ (0)
+
+/**
+ * Simulation (1)
+ * Tetris Friend (0)
+ */
+#define _S_ (1)
 
 /**
  * Configuration
@@ -19,12 +29,6 @@
 #define _ITEM (5)
 #define _W    (10)
 #define _H    (20)
-
-typedef struct {
-    uint8_t hold;
-    int8_t  x;
-    int8_t  r;
-} move_t;
 
 typedef struct {
     int l;  /* Last item height. */

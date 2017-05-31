@@ -5,6 +5,7 @@
 
 #include "tetris.h"
 #include "tetris_item.h"
+#include "tetris_move.h"
 
 int tetris_ai(tetris_t *t,
               item_t    curr_item,
