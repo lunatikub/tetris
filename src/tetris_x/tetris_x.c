@@ -8,24 +8,18 @@
 
 int tetris_x_init()
 {
-    initscr();
-    start_color();
+  initscr();
+  start_color();
 
-    init_pair(1, COLOR_RED, COLOR_BLACK);
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(3, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(4, COLOR_BLUE, COLOR_BLACK);
-    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
-    init_pair(6, COLOR_CYAN, COLOR_BLACK);
-    init_pair(7, COLOR_WHITE, COLOR_BLACK);
+  init_pair(1, COLOR_RED, COLOR_BLACK);
+  init_pair(2, COLOR_GREEN, COLOR_BLACK);
+  init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(4, COLOR_BLUE, COLOR_BLACK);
+  init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+  init_pair(6, COLOR_CYAN, COLOR_BLACK);
+  init_pair(7, COLOR_WHITE, COLOR_BLACK);
 
-    init_color(COLOR_ORANGE, 1000, 640, 0);
-    init_pair(8, COLOR_ORANGE, COLOR_BLACK);
-
-    init_color(COLOR_PURPLE, 640, 128, 960);
-    init_pair(9, COLOR_PURPLE, COLOR_BLACK);
-
-    return 0;
+  return 0;
 }
 
 static inline void I_dump(int x, int y)
